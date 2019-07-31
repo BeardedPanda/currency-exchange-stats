@@ -1,6 +1,7 @@
 {
   "name": "Currency exchange stats",
-  "version": "0.0.1",
+  "description": "Збір статистики про обмін валют м.Рівне.",
+  "version": "0.0.2",
   "options_page": "options.html",
   "background": {
     "page": "background.html"
