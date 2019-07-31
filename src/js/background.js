@@ -13,7 +13,7 @@ updateAllData(true);
 const setDefaultSettings = async () => {
     await setItem('settings', {
         showCurrencies: supportedCurrencies,
-        trackCurrencies: [],
+        trackedCurrencies: [],
     });
 };
 chrome.runtime.onInstalled.addListener((details) => {
