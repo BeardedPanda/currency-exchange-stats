@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@beyonk/svelte-notifications@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@beyonk/svelte-notifications/-/svelte-notifications-1.1.2.tgz#d8653f5a14f32e5321db49ccd0efc37aa9e4837c"
+  integrity sha512-lbkLdb7dJCBO5EoLBxCsUc4fwlelScqQJkPFJxS65kFxG/H+IpAWfSqrPoT+GUX6N+P0GwliVxOd3QrTFf53tw==
+
 "@types/events@*":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
@@ -3927,17 +3932,17 @@ svelte-dev-helper@^1.1.9:
   integrity sha1-fRh9tcbNu9ZNdaMvkbiZi94yc8M=
 
 svelte-loader@^2.13.4:
-  version "2.13.5"
-  resolved "https://registry.yarnpkg.com/svelte-loader/-/svelte-loader-2.13.5.tgz#a7a7f1c6c848ac63fac30a015230e19290592b50"
-  integrity sha512-cRPqEsiVc88C5em/u0wUuEsZQSL5Yzfwmq4VaA2LVejMGcJxHL29F25yI9I3pZxek010pN9WMyiuRdyu8M6yRw==
+  version "2.13.6"
+  resolved "https://registry.yarnpkg.com/svelte-loader/-/svelte-loader-2.13.6.tgz#3d5efd5886c2bab034606d5af0cce659da3ee555"
+  integrity sha512-7uf7ZQdPAl+lwb1ldUYJFY/raZRUCuaNx7lMJ+F16jrVwN1+c35C2pBMGIY0mCqdKm5sm45jqELJJLGM3UG9Pw==
   dependencies:
     loader-utils "^1.1.0"
     svelte-dev-helper "^1.1.9"
 
 svelte@^3.5.1:
-  version "3.6.8"
-  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.6.8.tgz#20c8f580f70dbdd9b1df618e33fa1d7e63c499b9"
-  integrity sha512-rRgWC/a+QUpAG7N9Y3RNkSUZ2/26+865L5GC/z6GYW54kikXhj2eoG1o9FNuUZX5eLOmdZVV33ytQ++3aBN3pQ==
+  version "3.6.9"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.6.9.tgz#949f4674329d04d3281f7cf340285ae3480f28da"
+  integrity sha512-k72cp0LYzennT7xgnQU0jB2HJEZ/fQamZbrHJO6JlvsNX+z6a1YJaLrtN4qQ1yfozUkeGw1TOvDxo8a5grOZMg==
 
 tapable@^1.0.0, tapable@^1.1.0:
   version "1.1.3"
