@@ -64,7 +64,7 @@ const options = {
   },
   plugins: [
     // clean the build folder
-    new CleanWebpackPlugin({cleanOnceBeforeBuildPatterns: ["build"]}),
+    new CleanWebpackPlugin(),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
