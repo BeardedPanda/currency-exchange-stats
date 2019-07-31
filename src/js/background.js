@@ -5,14 +5,11 @@ import '../img/icon-32.png';
 import '../img/raised.svg';
 import '../img/lowered.svg';
 import {updateAllData} from "./data-parser";
-import {onChange, setItem} from "../helpers";
+import {setItem} from "../helpers";
 import {supportedCurrencies} from "../helpers/constants";
 
 updateAllData(true);
 
-onChange((...args) => {
-    console.info(...args)
-});
 const setDefaultSettings = async () => {
     await setItem('settings', {
         showCurrencies: supportedCurrencies,
