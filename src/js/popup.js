@@ -1,8 +1,6 @@
-import App from '../svelte/Popup.svelte';
+import PopUp from '../components/Popup.svelte';
 
-const app = new App({
-	target: document.body,
+new PopUp({
+    target: document.body,
 });
-
-window.app = app;
-export default app;
+document.addEventListener('contextmenu', e => e.preventDefault(), false);

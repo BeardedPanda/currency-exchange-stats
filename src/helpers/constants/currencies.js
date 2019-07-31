@@ -1,4 +1,5 @@
-export const lionCurrency = {
+export const supportedCurrencies = ['USD', 'EUR', 'PLN'];
+export const lionCurrencyFormats = {
     usd: 'USD',
     eur: 'EUR',
     rub: 'RUB',
@@ -8,4 +9,3 @@ export const lionCurrency = {
     knd: 'CAD',
     swe: 'CHF',
 };
-

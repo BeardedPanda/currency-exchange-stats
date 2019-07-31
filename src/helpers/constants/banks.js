@@ -8,5 +8,3 @@ export const bankUrls = {
     piramida: 'https://lion-kurs.com.ua/',
     lion: 'http://www.piramida.rv.ua/'
 };
-
-export const supportedCurrencies = ['USD', 'EUR', 'PLN'];

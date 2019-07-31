@@ -15,84 +15,84 @@ const secretsPath = path.join(__dirname, ("secrets." + env.NODE_ENV + ".js"));
 const fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "svg", "ttf", "woff", "woff2"];
 
 if (fileSystem.existsSync(secretsPath)) {
-  alias["secrets"] = secretsPath;
+    alias["secrets"] = secretsPath;
 }
 
 const options = {
-  mode: env.NODE_ENV,
-  entry: {
-    popup: path.join(__dirname, "src", "js", "popup.js"),
-    options: path.join(__dirname, "src", "js", "options.js"),
-    background: path.join(__dirname, "src", "js", "background.js")
-  },
-  output: {
-    path: path.join(__dirname, "build"),
-    filename: "[name].bundle.js"
-  },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        loader: "style-loader!css-loader",
-        exclude: /node_modules/
-      },
-      {
-        test: new RegExp('\.(' + fileExtensions.join('|') + ')$'),
-        loader: "file-loader?name=[name].[ext]",
-        exclude: /node_modules/
-      },
-      {
-        test: /\.html$/,
-        loader: "html-loader",
-        exclude: /node_modules/
-      },
-      {
-        test: /\.svelte$/,
-				exclude: /node_modules/,
-				use: {
-					loader: 'svelte-loader',
-					options: {
-						emitCss: false,
-						hotReload: false
-					}
-				}
-      }
+    mode: env.NODE_ENV,
+    entry: {
+        popup: path.join(__dirname, "src", "js", "popup.js"),
+        options: path.join(__dirname, "src", "js", "options.js"),
+        background: path.join(__dirname, "src", "js", "background.js")
+    },
+    output: {
+        path: path.join(__dirname, "build"),
+        filename: "[name].bundle.js"
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                loader: "style-loader!css-loader",
+                exclude: /node_modules/
+            },
+            {
+                test: new RegExp('\.(' + fileExtensions.join('|') + ')$'),
+                loader: "file-loader?name=[name].[ext]",
+                exclude: /node_modules/
+            },
+            {
+                test: /\.html$/,
+                loader: "html-loader",
+                exclude: /node_modules/
+            },
+            {
+                test: /\.svelte$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'svelte-loader',
+                    options: {
+                        emitCss: false,
+                        hotReload: false
+                    }
+                }
+            }
+        ]
+    },
+    resolve: {
+        alias: alias
+    },
+    plugins: [
+        // clean the build folder
+        new CleanWebpackPlugin(),
+        // expose and write the allowed env vars on the compiled bundle
+        new webpack.DefinePlugin({
+            "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
+        }),
+        new CopyWebpackPlugin([{
+            from: "src/manifest.json",
+        }, {from: 'src/img', to: ''}], {copyUnmodified: true}),
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, "src", "popup.html"),
+            filename: "popup.html",
+            chunks: ["popup"]
+        }),
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, "src", "options.html"),
+            filename: "options.html",
+            chunks: ["options"]
+        }),
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, "src", "background.html"),
+            filename: "background.html",
+            chunks: ["background"]
+        }),
+        new WriteFilePlugin()
     ]
-  },
-  resolve: {
-    alias: alias
-  },
-  plugins: [
-    // clean the build folder
-    new CleanWebpackPlugin(),
-    // expose and write the allowed env vars on the compiled bundle
-    new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
-    }),
-    new CopyWebpackPlugin([{
-      from: "src/manifest.json",
-    }], {copyUnmodified: true}),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "popup.html"),
-      filename: "popup.html",
-      chunks: ["popup"]
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "options.html"),
-      filename: "options.html",
-      chunks: ["options"]
-    }),
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, "src", "background.html"),
-      filename: "background.html",
-      chunks: ["background"]
-    }),
-    new WriteFilePlugin()
-  ]
 };
 
 if (env.NODE_ENV === "development") {
-  options.devtool = "cheap-module-eval-source-map";
+    options.devtool = "cheap-module-eval-source-map";
 }
 
 module.exports = options;

@@ -1,5 +1,6 @@
-import {getItem, lionCurrency, setItem} from "../helpers";
-import {bankTitles, bankUrls} from "../helpers/constants";
+import {getItem, setItem} from "../helpers/storage";
+import {bankTitles, bankUrls, lionCurrencyFormats} from "../helpers/constants";
+import {showNotification} from "../helpers/notification";
 
 const getComparisonStatus = (oldValue, newValue) => {
     if (oldValue === newValue) {
@@ -9,12 +10,6 @@ const getComparisonStatus = (oldValue, newValue) => {
     }
     return 'lowered';
 };
-const linkMap = {};
-chrome.notifications.onClicked.addListener((id) => {
-    if (linkMap[id]) {
-        chrome.tabs.create({url: linkMap[id]});
-    }
-});
 
 const saveDataWithChanges = async (key, data, skipNotifications) => {
     const {trackedCurrencies} = await getItem('settings');
@@ -40,12 +35,7 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
                 if (item.sellStatus !== 'unchanged') {
                     message += `Ціна продажу валюти ${item.currency} змінилась з ${oldItem.sell} до ${item.sell}. \n`;
                 }
-                const id = `${key}-buy-changed-${Date.now()}`;
-                chrome.notifications.create(id, {type: 'basic', title: bankTitles[key], iconUrl: 'icon-256.png', message}, (notificationId) => {linkMap[notificationId] = bankUrls[key]});
-                setTimeout(() => {
-                    chrome.notifications.clear(id);
-                    delete linkMap[id];
-                }, 20000);
+                showNotification(`${key}-buy-changed-${Date.now()}`, bankTitles[key], message, bankUrls[key]);
             });
     }
     await setItem(key, comparedData);
@@ -74,7 +64,7 @@ export const updatePiramida = (skipNotifications = false) => parsePiramida().the
 })
     .then((data) => saveDataWithChanges('piramida', data, skipNotifications));
 
-const reformatLionCurrency = (abbr) => lionCurrency[abbr];
+const reformatLionCurrency = (abbr) => lionCurrencyFormats[abbr];
 const parseLion = () => fetch('https://lion-kurs.com.ua/', {mode: 'cors'}).then(res => res.text());
 export const updateLion = (skipNotifications = false) => parseLion().then(response => {
     const doc = new DOMParser().parseFromString(response, 'text/html');

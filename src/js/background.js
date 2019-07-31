@@ -1,13 +1,8 @@
-import '../img/icon-256.png';
-import '../img/icon-128.png';
-import '../img/icon-64.png';
-import '../img/icon-32.png';
-import '../img/raised.svg';
-import '../img/lowered.svg';
 import {updateAllData} from "./data-parser";
-import {setItem} from "../helpers";
+import {setItem} from "../helpers/storage";
 import {supportedCurrencies} from "../helpers/constants";
 
+// silently update data on extension start
 updateAllData(true);
 
 const setDefaultSettings = async () => {
@@ -16,10 +11,9 @@ const setDefaultSettings = async () => {
         trackedCurrencies: [],
     });
 };
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(async (details) => {
     if (details.reason === "install") {
-        console.log("This is a first install!");
-        setDefaultSettings();
+        await setDefaultSettings();
     } else if (details.reason === "update") {
         const thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
