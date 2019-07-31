@@ -38,7 +38,7 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
                     message += `Ціна купівлі валюти ${item.currency} змінилась з ${oldItem.buy} до ${item.buy}. \n`;
                 }
                 if (item.sellStatus !== 'unchanged') {
-                    message += `Ціна продажу валюти ${item.currency} змінилась з ${oldItem.buy} до ${item.buy}. \n`;
+                    message += `Ціна продажу валюти ${item.currency} змінилась з ${oldItem.sell} до ${item.sell}. \n`;
                 }
                 const id = `${key}-buy-changed-${Date.now()}`;
                 chrome.notifications.create(id, {type: 'basic', title: bankTitles[key], iconUrl: 'icon-256.png', message}, (notificationId) => {linkMap[notificationId] = bankUrls[key]});
