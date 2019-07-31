@@ -8,7 +8,7 @@ import {updateAllData} from "./data-parser";
 import {onChange, setItem} from "../helpers";
 import {supportedCurrencies} from "../helpers/constants";
 
-updateAllData();
+updateAllData(true);
 
 onChange((...args) => {
     console.info(...args)
