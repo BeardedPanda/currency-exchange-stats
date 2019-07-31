@@ -22,6 +22,7 @@
     "write-file-webpack-plugin": "4.5.0"
   },
   "dependencies": {
+    "@beyonk/svelte-notifications": "^1.1.2",
     "bulma": "^0.7.5"
   }
 }

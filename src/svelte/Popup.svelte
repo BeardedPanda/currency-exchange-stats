@@ -34,42 +34,45 @@
                     {#if (item.rulya.buyStatus !== 'unchanged')}
                         <img class="arrows" alt={item.rulya.buyStatus} src={`/${item.rulya.buyStatus}.svg`}>
                     {/if}
-                    { item.rulya.buy }
+                    { item.rulya.buy.toFixed(2) }
                 </td>
                 <td class="{item.bestSell === item.rulya.sell ? 'has-text-link' : ''}">
                     {#if (item.rulya.sellStatus !== 'unchanged')}
                         <img class="arrows" alt={item.rulya.sellStatus} src={`/${item.rulya.sellStatus}.svg`}>
                     {/if}
-                    { item.rulya.sell }
+                    { item.rulya.sell.toFixed(2) }
                 </td>
                 <td class="{item.bestBuy === item.lion.buy ? 'has-text-link' : ''}">
                     {#if (item.lion.buyStatus !== 'unchanged')}
                         <img class="arrows" alt={item.lion.buyStatus} src={`/${item.lion.buyStatus}.svg`}>
                     {/if}
-                    { item.lion.buy }
+                    { item.lion.buy.toFixed(2) }
                 </td>
                 <td class="{item.bestSell === item.lion.sell ? 'has-text-link' : ''}">
                     {#if (item.lion.sellStatus !== 'unchanged')}
                         <img class="arrows" alt={item.lion.sellStatus} src={`/${item.lion.sellStatus}.svg`}>
                     {/if}
-                    { item.lion.sell }
+                    { item.lion.sell.toFixed(2) }
                 </td>
                 <td class="{item.bestBuy === item.piramida.buy ? 'has-text-link' : ''}">
                     {#if (item.piramida.buyStatus !== 'unchanged')}
                         <img class="arrows" alt={item.rulya.buyStatus} src={`/${item.piramida.buyStatus}.svg`}>
                     {/if}
-                    { item.piramida.buy }
+                    { item.piramida.buy.toFixed(2) }
                 </td>
                 <td class="{item.bestSell === item.piramida.sell ? 'has-text-link' : ''}">
                     {#if (item.piramida.sellStatus !== 'unchanged')}
                         <img class="arrows" alt={item.piramida.sellStatus} src={`/${item.piramida.sellStatus}.svg`}>
                     {/if}
-                    { item.piramida.sell }
+                    { item.piramida.sell.toFixed(2) }
                 </td>
             </tr>
         {/each}
         </tbody>
     </table>
+    <p class="has-text-right">
+        <a target="_blank" href="options.html">Options</a>
+    </p>
 </section>
 
 <script>
@@ -85,7 +88,8 @@
         rulyaData = await getItem('rulya');
         lionData = await getItem('lion');
         piramidaData = await getItem('piramida');
-        tableData = ['USD', 'EUR'].map((currency) => {
+        const {showCurrencies} = await getItem('settings');
+        tableData = showCurrencies.map((currency) => {
             const rulya = rulyaData.find(item => item.currency === currency);
             const lion = lionData.find(item => item.currency === currency);
             const piramida = piramidaData.find(item => item.currency === currency);
@@ -111,7 +115,7 @@
     }
     .popup-wrapper {
         padding: 1rem;
-        width: 500px;
+        width: 600px;
     }
 
     .logo {
