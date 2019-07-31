@@ -71,7 +71,7 @@ const options = {
     }),
     new CopyWebpackPlugin([{
       from: "src/manifest.json",
-    }]),
+    }], {copyUnmodified: true}),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "src", "popup.html"),
       filename: "popup.html",

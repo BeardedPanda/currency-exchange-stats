@@ -1,5 +1,5 @@
 import {getItem, lionCurrency, setItem} from "../helpers";
-import {bankTitles} from "../helpers/constants";
+import {bankTitles, bankUrls} from "../helpers/constants";
 
 const getComparisonStatus = (oldValue, newValue) => {
     if (oldValue === newValue) {
@@ -9,6 +9,12 @@ const getComparisonStatus = (oldValue, newValue) => {
     }
     return 'lowered';
 };
+const linkMap = {};
+chrome.notifications.onClicked.addListener((id) => {
+    if (linkMap[id]) {
+        chrome.tabs.create({url: linkMap[id]});
+    }
+});
 
 const saveDataWithChanges = async (key, data, skipNotifications) => {
     const {trackedCurrencies} = await getItem('settings');
@@ -22,23 +28,26 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
         item.sellStatus = getComparisonStatus(oldItem.sell, item.sell);
         return item;
     });
-    comparedData
-        .filter(item => [item.buyStatus, item.sellStatus].some(status => status !== 'unchanged') && trackedCurrencies.some(tracked => tracked.currency === item.currency))
-        .forEach(item => {
-            const oldItem = oldData.find(record => record.currency === item.currency);
-            let message = '';
-            if (item.buyStatus !== 'unchanged') {
-                message += `Ціна купівлі валюти ${item.currency} змінилась з ${oldItem.buy} до ${item.buy}. \n`;
-            }
-            if (item.sellStatus !== 'unchanged') {
-                message += `Ціна продажу валюти ${item.currency} змінилась з ${oldItem.buy} до ${item.buy}. \n`;
-            }
-            const id = `${key}-buy-changed-${Date.now()}`;
-            chrome.notifications.create(id, {type: 'basic', title: bankTitles[key], iconUrl: 'icon-256.png', message});
-            setTimeout(() => chrome.notifications.clear(id), 20000);
-        });
-    console.info('1', comparedData
-        .filter(item => [item.buyStatus, item.sellStatus].some(status => status !== 'unchanged') && trackedCurrencies.some(tracked => tracked.currency === item.currency)));
+    if (!skipNotifications) {
+        comparedData
+            .filter(item => [item.buyStatus, item.sellStatus].some(status => status !== 'unchanged') && trackedCurrencies.some(tracked => tracked.currency === item.currency))
+            .forEach(item => {
+                const oldItem = oldData.find(record => record.currency === item.currency);
+                let message = '';
+                if (item.buyStatus !== 'unchanged') {
+                    message += `Ціна купівлі валюти ${item.currency} змінилась з ${oldItem.buy} до ${item.buy}. \n`;
+                }
+                if (item.sellStatus !== 'unchanged') {
+                    message += `Ціна продажу валюти ${item.currency} змінилась з ${oldItem.buy} до ${item.buy}. \n`;
+                }
+                const id = `${key}-buy-changed-${Date.now()}`;
+                chrome.notifications.create(id, {type: 'basic', title: bankTitles[key], iconUrl: 'icon-256.png', message}, (notificationId) => {linkMap[notificationId] = bankUrls[key]});
+                setTimeout(() => {
+                    chrome.notifications.clear(id);
+                    delete linkMap[id];
+                }, 20000);
+            });
+    }
     await setItem(key, comparedData);
 };
 
