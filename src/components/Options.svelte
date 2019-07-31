@@ -73,7 +73,7 @@
 <script>
     import Notifications from '@beyonk/svelte-notifications';
     import {supportedCurrencies} from '../helpers/constants';
-    import {getItem, setItem} from '../helpers';
+    import {getItem, setItem} from '../helpers/storage';
     import {onMount} from 'svelte';
 
     let notifications;
