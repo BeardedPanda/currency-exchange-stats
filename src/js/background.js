@@ -1,14 +1,26 @@
 import {updateAllData} from "./data-parser";
-import {setItem} from "../helpers/storage";
+import {setItem, onChange} from "../helpers/storage";
 import {supportedCurrencies} from "../helpers/constants";
+import {resetAlarm} from "../helpers/alarms";
 
-// silently update data on extension start
-updateAllData(true);
+const init = async () => {
+    // silently update data on extension start
+    await updateAllData(true);
+    await resetAlarm();
+};
+
+onChange(async (event) => {
+    if (event.hasOwnProperty('settings') && event.settings.oldValue && event.settings.newValue.updatePeriod !== event.settings.oldValue.updatePeriod) {
+        await resetAlarm();
+    }
+});
+
 
 const setDefaultSettings = async () => {
     await setItem('settings', {
         showCurrencies: supportedCurrencies,
         trackedCurrencies: [],
+        updatePeriod: 15,
     });
 };
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -20,5 +32,5 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     }
 });
 
-chrome.alarms.create('15minTimer', {periodInMinutes: 15});
 chrome.alarms.onAlarm.addListener(updateAllData);
+init();

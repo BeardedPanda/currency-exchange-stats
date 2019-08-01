@@ -1,5 +1,5 @@
 import {getItem, setItem} from "../helpers/storage";
-import {bankTitles, bankUrls, lionCurrencyFormats} from "../helpers/constants";
+import {bankTitles, bankUrls, lionCurrencyFormats, supportedCurrencies} from "../helpers/constants";
 import {showNotification} from "../helpers/notification";
 
 const getComparisonStatus = (oldValue, newValue) => {
@@ -15,9 +15,11 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
     const {trackedCurrencies} = await getItem('settings');
     const oldData = await getItem(key);
     if (!oldData) {
-        return setItem(key, data.map(item => ({...item, buyStatus: 'unchanged', sellStatus: 'unchanged'})));
+        return setItem(key, data.map(item => ({...item, buyStatus: 'unchanged', sellStatus: 'unchanged', updatedAt: Date.now()})));
     }
-    const comparedData = data.map(item => {
+    const comparedData = data
+        .filter(item => supportedCurrencies.includes(item.currency))
+        .map(item => {
         const oldItem = oldData.find(record => record.currency === item.currency);
         item.buyStatus = getComparisonStatus(oldItem.buy, item.buy);
         item.sellStatus = getComparisonStatus(oldItem.sell, item.sell);
@@ -42,7 +44,7 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
     await setItem(key, comparedData);
 };
 
-const parseRulya = () => fetch('http://rulya-bank.com.ua/', {mode: 'cors'}).then(res => res.text());
+const parseRulya = () => fetch(bankUrls.rulya, {mode: 'cors'}).then(res => res.text());
 export const updateRulya = (skipNotifications = false) => parseRulya().then(response => {
     const doc = new DOMParser().parseFromString(response, 'text/html');
     return [...doc.querySelectorAll('#ltbl tr:not(:first-child)')]
@@ -54,31 +56,46 @@ export const updateRulya = (skipNotifications = false) => parseRulya().then(resp
 })
     .then((data) => saveDataWithChanges('rulya', data, skipNotifications));
 
-const parsePiramida = () => fetch('http://www.piramida.rv.ua/', {mode: 'cors'}).then(res => res.text());
+const parsePiramida = () => fetch(bankUrls.piramida, {mode: 'cors'}).then(res => res.text());
 export const updatePiramida = (skipNotifications = false) => parsePiramida().then(response => {
     const doc = new DOMParser().parseFromString(response, 'text/html');
-    return [...doc.querySelectorAll('#maintb tbody tr')].map((tr) => ({
-        currency: tr.querySelector('td:nth-child(1)').textContent,
-        buy: Number(tr.querySelector('td:nth-child(2)').textContent),
-        sell: Number(tr.querySelector('td:nth-child(3)').textContent),
-    }));
+    return [...doc.querySelectorAll('#maintb tbody tr')]
+        .map((tr) => ({
+            currency: tr.querySelector('td:nth-child(1)').textContent,
+            buy: Number(tr.querySelector('td:nth-child(2)').textContent),
+            sell: Number(tr.querySelector('td:nth-child(3)').textContent),
+        }));
 })
     .then((data) => saveDataWithChanges('piramida', data, skipNotifications));
 
 const reformatLionCurrency = (abbr) => lionCurrencyFormats[abbr];
-const parseLion = () => fetch('https://lion-kurs.com.ua/', {mode: 'cors'}).then(res => res.text());
+const parseLion = () => fetch(bankUrls.lion, {mode: 'cors'}).then(res => res.text());
 export const updateLion = (skipNotifications = false) => parseLion().then(response => {
     const doc = new DOMParser().parseFromString(response, 'text/html');
-    return [...doc.querySelectorAll('.content table tbody tr:not(:first-child):not(:last-child)')].map((tr) => ({
-        currency: reformatLionCurrency(tr.querySelector('.valuta img').getAttribute('src').match(new RegExp('\/(?<currency>[a-z]+)')).groups.currency),
-        buy: Number(tr.querySelector('td:nth-child(1)').textContent),
-        sell: Number(tr.querySelector('td:nth-child(3)').textContent),
-    }));
+    return [...doc.querySelectorAll('.content table tbody tr:not(:first-child):not(:last-child)')]
+        .map((tr) => ({
+            currency: reformatLionCurrency(tr.querySelector('.valuta img').getAttribute('src').match(new RegExp('\/(?<currency>[a-z]+)')).groups.currency),
+            buy: Number(tr.querySelector('td:nth-child(1)').textContent),
+            sell: Number(tr.querySelector('td:nth-child(3)').textContent),
+        }));
 })
     .then((data) => saveDataWithChanges('lion', data, skipNotifications));
+
+const parseGoverla = () => fetch(bankUrls.goverla, {mode: 'cors'}).then(res => res.text());
+export const updateGoverla = (skipNotifications = false) => parseGoverla().then(response => {
+    const doc = new DOMParser().parseFromString(response, 'text/html');
+    return [...doc.querySelectorAll('#rates .gvrl-table .gvrl-table-body .gvrl-table-row')]
+        .map((tr) => ({
+            currency: tr.querySelector('.gvrl-table-cell:nth-child(1) img').getAttribute('alt'),
+            buy: Number(tr.querySelector('.gvrl-table-cell:nth-child(2)').textContent) / 100,
+            sell: Number(tr.querySelector('.gvrl-table-cell:nth-child(3)').textContent) / 100,
+        }));
+})
+    .then((data) => saveDataWithChanges('goverla', data, skipNotifications));
 
 export const updateAllData = async (skipNotifications = false) => {
     await updateRulya(skipNotifications);
     await updatePiramida(skipNotifications);
     await updateLion(skipNotifications);
+    await updateGoverla(skipNotifications);
 };

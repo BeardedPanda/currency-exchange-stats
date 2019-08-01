@@ -6,18 +6,24 @@
             <th rowspan="2"></th>
             <th colspan="2">
                 <p><img class="logo" src="http://rulya-bank.com.ua/favicon.ico" alt=""></p>
-                <a href="javascript:" on:click="{() => openTab('http://rulya-bank.com.ua/')}">Rulya Bank</a>
+                <a href="javascript:" on:click="{() => openTab(bankUrls.rulya)}">{ bankTitles.rulya }</a>
             </th>
             <th colspan="2">
                 <p><img class="logo" src="https://lion-kurs.com.ua/image/slogo.ico" alt=""></p>
-                <a href="javascript:" on:click="{() => openTab('https://lion-kurs.com.ua/')}">Lion Kurs</a>
+                <a href="javascript:" on:click="{() => openTab(bankUrls.lion)}">{ bankTitles.lion }</a>
             </th>
             <th colspan="2">
                 <p><img class="logo" src="http://www.piramida.rv.ua/img/logo-piramida.png" alt=""></p>
-                <a href="javascript:" on:click="{() => openTab('http://www.piramida.rv.ua/')}">Piramida</a>
+                <a href="javascript:" on:click="{() => openTab(bankUrls.piramida)}">{ bankTitles.piramida }</a>
+            </th>
+            <th colspan="2">
+                <p><img class="logo" src="https://goverla.ua/static/imgs/favicon.gif" alt=""></p>
+                <a href="javascript:" on:click="{() => openTab(bankUrls.goverla)}">{ bankTitles.goverla }</a>
             </th>
         </tr>
         <tr>
+            <th>Buy</th>
+            <th>Sell</th>
             <th>Buy</th>
             <th>Sell</th>
             <th>Buy</th>
@@ -66,6 +72,18 @@
                     {/if}
                     { item.piramida.sell.toFixed(2) }
                 </td>
+                <td class="{item.bestBuy === item.goverla.buy ? 'has-text-link' : ''}">
+                    {#if (item.goverla.buyStatus !== 'unchanged')}
+                        <img class="arrows" alt={item.rulya.buyStatus} src={`/${item.goverla.buyStatus}.svg`}>
+                    {/if}
+                    { item.goverla.buy.toFixed(2) }
+                </td>
+                <td class="{item.bestSell === item.goverla.sell ? 'has-text-link' : ''}">
+                    {#if (item.goverla.sellStatus !== 'unchanged')}
+                        <img class="arrows" alt={item.goverla.sellStatus} src={`/${item.goverla.sellStatus}.svg`}>
+                    {/if}
+                    { item.goverla.sell.toFixed(2) }
+                </td>
             </tr>
         {/each}
         </tbody>
@@ -88,11 +106,13 @@
     import {getItem} from '../helpers/storage';
     import {onMount} from 'svelte';
     import {updateAllData} from '../js/data-parser';
+    import {bankTitles, bankUrls} from '../helpers/constants';
 
     const openTab = (url) => chrome.tabs.create({url});
     let rulyaData = [];
     let lionData = [];
     let piramidaData = [];
+    let goverlaData = [];
     let tableData = [];
     let loading = false;
 
@@ -100,13 +120,15 @@
         rulyaData = await getItem('rulya');
         lionData = await getItem('lion');
         piramidaData = await getItem('piramida');
+        goverlaData = await getItem('goverla');
         const {showCurrencies} = await getItem('settings');
         tableData = showCurrencies.map((currency) => {
             const rulya = rulyaData.find(item => item.currency === currency);
             const lion = lionData.find(item => item.currency === currency);
             const piramida = piramidaData.find(item => item.currency === currency);
-            const bestBuy = Math.max(rulya.buy, lion.buy, piramida.buy);
-            const bestSell = Math.min(rulya.sell, lion.sell, piramida.sell);
+            const goverla = goverlaData.find(item => item.currency === currency);
+            const bestBuy = Math.max(rulya.buy, lion.buy, piramida.buy, goverla.buy);
+            const bestSell = Math.min(rulya.sell, lion.sell, piramida.sell, goverla.buy);
             const updatedAt = dayjs(Math.max(rulya.updatedAt, lion.updatedAt, piramida.updatedAt)).format('DD/MM/YYYY HH:mm:ss');
             return {
                 currency,
@@ -115,6 +137,7 @@
                 rulya,
                 lion,
                 piramida,
+                goverla,
                 updatedAt,
             };
         });
@@ -139,7 +162,7 @@
 
     .popup-wrapper {
         padding: 1rem;
-        width: 600px;
+        width: 800px;
     }
 
     .logo {

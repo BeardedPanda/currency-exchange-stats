@@ -21,7 +21,8 @@
     "notifications",
     "*://rulya-bank.com.ua/*",
     "*://www.piramida.rv.ua/*",
-    "*://lion-kurs.com.ua/*"
+    "*://lion-kurs.com.ua/*",
+    "*://goverla.ua/*"
   ],
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
