@@ -15,7 +15,7 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
     const {trackedCurrencies} = await getItem('settings');
     const oldData = await getItem(key);
     if (!oldData) {
-        return setItem(key, data.map(item => ({...item, buyStatus: 'unchanged', sellStatus: 'unchanged'})));
+        return setItem(key, data.map(item => ({...item, buyStatus: 'unchanged', sellStatus: 'unchanged', updatedAt: Date.now()})));
     }
     const comparedData = data
         .filter(item => supportedCurrencies.includes(item.currency))
@@ -44,7 +44,7 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
     await setItem(key, comparedData);
 };
 
-const parseRulya = () => fetch('http://rulya-bank.com.ua/', {mode: 'cors'}).then(res => res.text());
+const parseRulya = () => fetch(bankUrls.rulya, {mode: 'cors'}).then(res => res.text());
 export const updateRulya = (skipNotifications = false) => parseRulya().then(response => {
     const doc = new DOMParser().parseFromString(response, 'text/html');
     return [...doc.querySelectorAll('#ltbl tr:not(:first-child)')]
@@ -56,7 +56,7 @@ export const updateRulya = (skipNotifications = false) => parseRulya().then(resp
 })
     .then((data) => saveDataWithChanges('rulya', data, skipNotifications));
 
-const parsePiramida = () => fetch('http://www.piramida.rv.ua/', {mode: 'cors'}).then(res => res.text());
+const parsePiramida = () => fetch(bankUrls.piramida, {mode: 'cors'}).then(res => res.text());
 export const updatePiramida = (skipNotifications = false) => parsePiramida().then(response => {
     const doc = new DOMParser().parseFromString(response, 'text/html');
     return [...doc.querySelectorAll('#maintb tbody tr')]
@@ -69,7 +69,7 @@ export const updatePiramida = (skipNotifications = false) => parsePiramida().the
     .then((data) => saveDataWithChanges('piramida', data, skipNotifications));
 
 const reformatLionCurrency = (abbr) => lionCurrencyFormats[abbr];
-const parseLion = () => fetch('https://lion-kurs.com.ua/', {mode: 'cors'}).then(res => res.text());
+const parseLion = () => fetch(bankUrls.lion, {mode: 'cors'}).then(res => res.text());
 export const updateLion = (skipNotifications = false) => parseLion().then(response => {
     const doc = new DOMParser().parseFromString(response, 'text/html');
     return [...doc.querySelectorAll('.content table tbody tr:not(:first-child):not(:last-child)')]

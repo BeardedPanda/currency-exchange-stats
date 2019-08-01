@@ -59,6 +59,23 @@
         </div>
     </section>
     <section class="section">
+        <div class="container">
+            <h1 class="title">Частота оновлень</h1>
+            <h2 class="subtitle">
+                Ви можете вказати, наскільки часто оновлювати інформацію.
+            </h2>
+            <div class="select">
+                <select bind:value="{updatePeriod}">
+                    <option value={1}>1 хв</option>
+                    <option value={5}>5 хв</option>
+                    <option value={10}>10 хв</option>
+                    <option value={15}>15 хв</option>
+                    <option value={30}>30 хв</option>
+                </select>
+            </div>
+        </div>
+    </section>
+    <section class="section">
         <div class="container has-text-right">
             {#if !showCurrencies.length}
                 <p class="has-text-danger">Виберіть хоча б одну з валют.</p>
@@ -82,9 +99,11 @@
     let trackedCurrenciesByName = [];
     let showCurrencies = [];
     let buySellTrack = {};
+    let updatePeriod = 15;
 
     onMount(async () => {
         const settings = await getItem('settings');
+        updatePeriod = settings.updatePeriod;
         trackedCurrencies = settings.trackedCurrencies;
         trackedCurrenciesByName = settings.trackedCurrencies.map(item => item.currency);
         settings.trackedCurrencies.forEach(item => {
@@ -125,6 +144,7 @@
         try {
             await setItem('settings', {
                 showCurrencies,
+                updatePeriod,
                 trackedCurrencies: Object.values(buySellTrack).filter(item => item.buy || item.sell)
             });
             notifications.success('Налаштування збережено!', 1000);
