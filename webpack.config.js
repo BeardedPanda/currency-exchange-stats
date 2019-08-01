@@ -1,25 +1,15 @@
 const webpack = require("webpack"),
     path = require("path"),
-    fileSystem = require("fs"),
-    env = require("./utils/env"),
     {CleanWebpackPlugin} = require("clean-webpack-plugin"),
     CopyWebpackPlugin = require("copy-webpack-plugin"),
     HtmlWebpackPlugin = require("html-webpack-plugin"),
     WriteFilePlugin = require("write-file-webpack-plugin");
-
-// load the secrets
-const alias = {};
-
-const secretsPath = path.join(__dirname, ("secrets." + env.NODE_ENV + ".js"));
+const TerserPlugin = require('terser-webpack-plugin');
 
 const fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "svg", "ttf", "woff", "woff2"];
 
-if (fileSystem.existsSync(secretsPath)) {
-    alias["secrets"] = secretsPath;
-}
-
 const options = {
-    mode: env.NODE_ENV,
+    mode: process.env.NODE_ENV || 'development',
     entry: {
         popup: path.join(__dirname, "src", "js", "popup.js"),
         options: path.join(__dirname, "src", "js", "options.js"),
@@ -28,6 +18,9 @@ const options = {
     output: {
         path: path.join(__dirname, "build"),
         filename: "[name].bundle.js"
+    },
+    optimization: {
+        minimizer: [new TerserPlugin()],
     },
     module: {
         rules: [
@@ -59,15 +52,12 @@ const options = {
             }
         ]
     },
-    resolve: {
-        alias: alias
-    },
     plugins: [
         // clean the build folder
         new CleanWebpackPlugin(),
         // expose and write the allowed env vars on the compiled bundle
         new webpack.DefinePlugin({
-            "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
+            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
         }),
         new CopyWebpackPlugin([{
             from: "src/manifest.json",
@@ -91,8 +81,9 @@ const options = {
     ]
 };
 
-if (env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development") {
     options.devtool = "cheap-module-eval-source-map";
+    options.plugins.push(new webpack.HotModuleReplacementPlugin());
 }
 
 module.exports = options;
