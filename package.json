@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@beyonk/svelte-notifications": "^1.1.2",
-    "bulma": "^0.7.5"
+    "bulma": "^0.7.5",
+    "dayjs": "^1.8.15"
   }
 }

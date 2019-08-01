@@ -21,6 +21,7 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
         const oldItem = oldData.find(record => record.currency === item.currency);
         item.buyStatus = getComparisonStatus(oldItem.buy, item.buy);
         item.sellStatus = getComparisonStatus(oldItem.sell, item.sell);
+        item.updatedAt = Date.now();
         return item;
     });
     if (!skipNotifications) {

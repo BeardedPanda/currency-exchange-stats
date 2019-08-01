@@ -70,21 +70,33 @@
         {/each}
         </tbody>
     </table>
-    <p class="has-text-right">
+    <footer class="popup-footer">
+        {#if (tableData[0])}
+            <div class="has-text-grey">
+                Востаннє оновлено: { tableData[0].updatedAt }
+                <img src="refresh.svg" class={loading ? 'refresh-button is-rotating' : 'refresh-button'} alt="Оновити дані" on:click={refreshData}>
+            </div>
+        {:else}
+            <span></span>
+        {/if}
         <a target="_blank" href="options.html">Options</a>
-    </p>
+    </footer>
 </section>
 
 <script>
+    import dayjs from 'dayjs';
     import {getItem} from '../helpers/storage';
     import {onMount} from 'svelte';
+    import {updateAllData} from '../js/data-parser';
 
     const openTab = (url) => chrome.tabs.create({url});
     let rulyaData = [];
     let lionData = [];
     let piramidaData = [];
     let tableData = [];
-    onMount(async () => {
+    let loading = false;
+
+    const getAndFormatData = async () => {
         rulyaData = await getItem('rulya');
         lionData = await getItem('lion');
         piramidaData = await getItem('piramida');
@@ -95,6 +107,7 @@
             const piramida = piramidaData.find(item => item.currency === currency);
             const bestBuy = Math.max(rulya.buy, lion.buy, piramida.buy);
             const bestSell = Math.min(rulya.sell, lion.sell, piramida.sell);
+            const updatedAt = dayjs(Math.max(rulya.updatedAt, lion.updatedAt, piramida.updatedAt)).format('DD/MM/YYYY HH:mm:ss');
             return {
                 currency,
                 bestBuy,
@@ -102,8 +115,18 @@
                 rulya,
                 lion,
                 piramida,
+                updatedAt,
             };
         });
+    };
+    const refreshData = async () => {
+        loading = true;
+        await updateAllData();
+        await getAndFormatData();
+        loading = false;
+    };
+    onMount(async () => {
+        await getAndFormatData();
     });
 </script>
 
@@ -113,6 +136,7 @@
         margin-bottom: .5rem;
         text-transform: uppercase;
     }
+
     .popup-wrapper {
         padding: 1rem;
         width: 600px;
@@ -130,4 +154,23 @@
     table td, table th {
         text-align: center;
     }
+
+    .popup-footer {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .refresh-button {
+        height: .8rem;
+        cursor: pointer;
+    }
+
+    .refresh-button.is-rotating {
+        -webkit-animation:spin 1s linear infinite;
+        -moz-animation:spin 1s linear infinite;
+        animation:spin 1s linear infinite;
+    }
+    @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+    @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+    @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 </style>
