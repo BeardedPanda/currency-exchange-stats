@@ -1,4 +1,4 @@
-<section class="popup-wrapper is-loading">
+<section class="popup-wrapper">
     <h1 class="has-text-centered">Currency exchange stats</h1>
     <table class="table is-bordered is-striped is-fullwidth">
         <thead>
