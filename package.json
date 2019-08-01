@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "build": "webpack --mode=production",
+    "build-and-zip": "webpack --mode=production && cd build && bestzip %UserProfile%\\Desktop\\currency-exchange-stats-extension.zip *",
     "watch": "webpack --mode=development --watch"
   },
   "devDependencies": {
