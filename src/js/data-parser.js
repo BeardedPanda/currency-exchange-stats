@@ -33,10 +33,10 @@ const saveDataWithChanges = async (key, data, skipNotifications) => {
                 const oldItem = oldData.find(record => record.currency === item.currency);
                 let message = '';
                 if (item.buyStatus !== 'unchanged') {
-                    message += `Ціна купівлі валюти ${item.currency} змінилась з ${oldItem.buy} до ${item.buy}. \n`;
+                    message += `Ціна купівлі валюти ${item.currency} змінилась з ${oldItem.buy.toFixed(2)} до ${item.buy.toFixed(2)}. \n`;
                 }
                 if (item.sellStatus !== 'unchanged') {
-                    message += `Ціна продажу валюти ${item.currency} змінилась з ${oldItem.sell} до ${item.sell}. \n`;
+                    message += `Ціна продажу валюти ${item.currency} змінилась з ${oldItem.sell.toFixed(2)} до ${item.sell.toFixed(2)}. \n`;
                 }
                 showNotification(`${key}-buy-changed-${Date.now()}`, bankTitles[key], message, bankUrls[key]);
             });

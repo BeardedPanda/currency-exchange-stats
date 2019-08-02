@@ -1,15 +1,20 @@
 <section>
-<!--    <Notifications bind:this={notifications}></Notifications>-->
-    <div id="notif"></div>
     <section class="hero is-small is-info is-bold">
         <div class="hero-body">
             <div class="container">
-                <h1 class="title">
-                    Currency Exchange Stats
-                </h1>
-                <h2 class="subtitle">
-                    Extension settings
-                </h2>
+                <div class="columns">
+                    <div class="column">
+                        <h1 class="title">
+                            Currency Exchange Stats
+                        </h1>
+                        <h2 class="subtitle">
+                            Налаштування розширення
+                        </h2>
+                    </div>
+                    <div class="column has-text-right">
+                        <button class="button is-success is-large" on:click={saveSettings} disabled={!showCurrencies.length}>Зберегти</button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -27,6 +32,9 @@
                     </label>
                 </p>
             {/each}
+            {#if !showCurrencies.length}
+                <p class="has-text-danger">Виберіть хоча б одну з валют.</p>
+            {/if}
         </div>
     </section>
     <section class="section">
@@ -75,25 +83,13 @@
             </div>
         </div>
     </section>
-    <section class="section">
-        <div class="container has-text-right">
-            {#if !showCurrencies.length}
-                <p class="has-text-danger">Виберіть хоча б одну з валют.</p>
-            {/if}
-            <button class="button is-large is-info" on:click={saveSettings} disabled={!showCurrencies.length}>
-                Save
-            </button>
-        </div>
-    </section>
 </section>
 
 <script>
-    import Notifications from '@beyonk/svelte-notifications';
-    import {supportedCurrencies} from '../helpers/constants';
-    import {getItem, setItem} from '../helpers/storage';
+    import swal from 'sweetalert2';
     import {onMount} from 'svelte';
-
-    let notifications;
+    import {getItem, setItem} from '../helpers/storage';
+    import {supportedCurrencies} from '../helpers/constants';
 
     let trackedCurrencies = [];
     let trackedCurrenciesByName = [];
@@ -110,21 +106,6 @@
             buySellTrack[item.currency] = item;
         });
         showCurrencies = settings.showCurrencies;
-        notifications = new Notifications(
-                {
-                    target: document.querySelector('#notif'),
-                    props: {
-                        themes: { // These are the defaults
-                            danger: '#bb2124',
-                            success: 'hsl(141, 71%, 48%)',
-                            warning: '#f0ad4e',
-                            info: '#5bc0de',
-                            default: '#aaaaaa' // relates to simply '.show()'
-                        },
-                        timeout: 1000,
-                    }
-                }
-        )
     });
 
     const onShowCurrencyChange = (showCurrencies) => {
@@ -147,9 +128,20 @@
                 updatePeriod,
                 trackedCurrencies: Object.values(buySellTrack).filter(item => item.buy || item.sell)
             });
-            notifications.success('Налаштування збережено!', 1000);
+            swal.fire({
+                type: 'success',
+                title: 'Зміни успішно збережено!',
+                showConfirmButton: false,
+                timer: 1500
+            });
         } catch (e) {
-            notifications.danger(e.message, 1000);
+            swal.fire({
+                title: 'Зміни не збережено!',
+                type: 'error',
+                text: e.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
     };
 </script>
@@ -157,5 +149,9 @@
 <style>
     .ml-1 {
         margin-left: 1rem;
+    }
+
+    .section {
+        padding-bottom: 0;
     }
 </style>
