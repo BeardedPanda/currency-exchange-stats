@@ -97,7 +97,7 @@
         {:else}
             <span></span>
         {/if}
-        <a target="_blank" href="options.html">
+        <a href="javascript:" on:click={openSettingsTab}>
             <img src="/settings.svg" class="settings-image" alt="">
             Налаштування
         </a>
@@ -118,6 +118,20 @@
     let goverlaData = [];
     let tableData = [];
     let loading = false;
+
+    const openSettingsTab = () => {
+        chrome.tabs.query({title: 'Currency Exchange Stats: Options'}, (tabs) => {
+            if (tabs.length) {
+                if (tabs[0].active) {
+                    window.close();
+                } else {
+                    chrome.tabs.update(tabs[0].id, { highlighted: true });
+                }
+            } else {
+                chrome.tabs.create({url: '/options.html'});
+            }
+        })
+    };
 
     const getAndFormatData = async () => {
         rulyaData = await getItem('rulya');
