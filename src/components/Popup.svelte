@@ -97,7 +97,10 @@
         {:else}
             <span></span>
         {/if}
-        <a target="_blank" href="options.html">Options</a>
+        <a target="_blank" href="options.html">
+            <img src="/settings.svg" class="settings-image" alt="">
+            Налаштування
+        </a>
     </footer>
 </section>
 
@@ -181,6 +184,10 @@
     .popup-footer {
         display: flex;
         justify-content: space-between;
+    }
+
+    .settings-image {
+        height: .8rem;
     }
 
     .refresh-button {
