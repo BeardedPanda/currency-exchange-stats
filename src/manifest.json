@@ -1,5 +1,5 @@
 {
-  "name": "Currency exchange stats",
+  "name": "Currency exchange stats (Rivne, UA)",
   "description": "Збір статистики про обмін валют м.Рівне.",
   "version": "0.0.3",
   "options_page": "options.html",
