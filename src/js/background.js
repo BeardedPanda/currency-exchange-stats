@@ -21,6 +21,7 @@ const setDefaultSettings = async () => {
         showCurrencies: supportedCurrencies,
         trackedCurrencies: [],
         updatePeriod: 15,
+        language: 'uk',
     });
 };
 chrome.runtime.onInstalled.addListener(async (details) => {

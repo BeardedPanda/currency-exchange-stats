@@ -22,14 +22,14 @@
             </th>
         </tr>
         <tr>
-            <th>Buy</th>
-            <th>Sell</th>
-            <th>Buy</th>
-            <th>Sell</th>
-            <th>Buy</th>
-            <th>Sell</th>
-            <th>Buy</th>
-            <th>Sell</th>
+            <th><Translate prop="buy" /></th>
+            <th><Translate prop="sell" /></th>
+            <th><Translate prop="buy" /></th>
+            <th><Translate prop="sell" /></th>
+            <th><Translate prop="buy" /></th>
+            <th><Translate prop="sell" /></th>
+            <th><Translate prop="buy" /></th>
+            <th><Translate prop="sell" /></th>
         </tr>
         </thead>
         <tbody>
@@ -91,7 +91,7 @@
     <footer class="popup-footer">
         {#if (tableData[0])}
             <div class="has-text-grey">
-                Востаннє оновлено: { tableData[0].updatedAt }
+                <Translate prop="lastUpdated" />: { tableData[0].updatedAt }
                 <img src="refresh.svg" class={loading ? 'refresh-button is-rotating' : 'refresh-button'} alt="Оновити дані" on:click={refreshData}>
             </div>
         {:else}
@@ -99,7 +99,7 @@
         {/if}
         <a href="javascript:" on:click={openSettingsTab}>
             <img src="/settings.svg" class="settings-image" alt="">
-            Налаштування
+            <Translate prop="settings" />
         </a>
     </footer>
 </section>
@@ -110,6 +110,7 @@
     import {onMount} from 'svelte';
     import {updateAllData} from '../js/data-parser';
     import {bankTitles, bankUrls} from '../helpers/constants';
+    import Translate from './Translate.svelte';
 
     const openTab = (url) => chrome.tabs.create({url});
     let rulyaData = [];

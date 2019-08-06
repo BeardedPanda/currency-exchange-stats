@@ -8,11 +8,11 @@
                             Currency Exchange Stats
                         </h1>
                         <h2 class="subtitle">
-                            Налаштування розширення
+                            <Translate prop="settingsTitle" />
                         </h2>
                     </div>
                     <div class="column has-text-right">
-                        <button class="button is-success is-large" on:click={saveSettings} disabled={!showCurrencies.length}>Зберегти</button>
+                        <button class="button is-success is-large" on:click={saveSettings} disabled={!showCurrencies.length}><Translate prop="save" /></button>
                     </div>
                 </div>
             </div>
@@ -20,9 +20,9 @@
     </section>
     <section class="section">
         <div class="container">
-            <h1 class="title">Показувати курс</h1>
+            <h1 class="title"><Translate prop="showExchange" /></h1>
             <h2 class="subtitle">
-                Виберіть валюти, які мають бути показані у таблиці спливаючого вікна додатку.
+                <Translate prop="showExchangeDescr" />
             </h2>
             {#each supportedCurrencies as currency}
                 <p>
@@ -33,15 +33,15 @@
                 </p>
             {/each}
             {#if !showCurrencies.length}
-                <p class="has-text-danger">Виберіть хоча б одну з валют.</p>
+                <p class="has-text-danger"><Translate prop="noCurrencyCheckedError" /></p>
             {/if}
         </div>
     </section>
     <section class="section">
         <div class="container">
-            <h1 class="title">Відслідковувати курс</h1>
+            <h1 class="title"><Translate prop="trackExchange" /></h1>
             <h2 class="subtitle">
-                При зміні курсу вибраної валюти вам буде показано повідомлення, про зміни.
+                <Translate prop="trackExchangeDescr" />
             </h2>
             {#each supportedCurrencies as currency, index}
                 <p>
@@ -55,11 +55,11 @@
                     <section class="ml-1">
                         <label class="checkbox">
                             <input type="checkbox" bind:checked={buySellTrack[currency].buy}>
-                            Купівля
+                            <Translate prop="buy" />
                         </label>
                         <label class="checkbox">
                             <input type="checkbox" bind:checked={buySellTrack[currency].sell}>
-                            Продаж
+                            <Translate prop="sell" />
                         </label>
                     </section>
                 {/if}
@@ -68,17 +68,31 @@
     </section>
     <section class="section">
         <div class="container">
-            <h1 class="title">Частота оновлень</h1>
+            <h1 class="title"><Translate prop="refreshFrequency" /></h1>
             <h2 class="subtitle">
-                Ви можете вказати, наскільки часто оновлювати інформацію.
+                <Translate prop="refreshFrequencyDescr" />
             </h2>
             <div class="select">
                 <select bind:value="{updatePeriod}">
-                    <option value={1}>1 хв</option>
-                    <option value={5}>5 хв</option>
-                    <option value={10}>10 хв</option>
-                    <option value={15}>15 хв</option>
-                    <option value={30}>30 хв</option>
+                    <option value={1}>1 <Translate prop="minuteAbbr" /></option>
+                    <option value={5}>5 <Translate prop="minuteAbbr" /></option>
+                    <option value={10}>10 <Translate prop="minuteAbbr" /></option>
+                    <option value={15}>15 <Translate prop="minuteAbbr" /></option>
+                    <option value={30}>30 <Translate prop="minuteAbbr" /></option>
+                </select>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <h1 class="title"><Translate prop="languageSetting" /></h1>
+            <h2 class="subtitle">
+                <Translate prop="languageSettingDescr" />
+            </h2>
+            <div class="select">
+                <select bind:value="{language}">
+                    <option value={'uk'}>Українська</option>
+                    <option value={'en'}>English</option>
                 </select>
             </div>
         </div>
@@ -90,15 +104,19 @@
     import {onMount} from 'svelte';
     import {getItem, setItem} from '../helpers/storage';
     import {supportedCurrencies} from '../helpers/constants';
+    import {t} from '../helpers/multilang-plugin';
+    import Translate from './Translate.svelte';
 
     let trackedCurrencies = [];
     let trackedCurrenciesByName = [];
     let showCurrencies = [];
     let buySellTrack = {};
     let updatePeriod = 15;
+    let language = 'uk';
 
     onMount(async () => {
         const settings = await getItem('settings');
+        language = settings.language;
         updatePeriod = settings.updatePeriod;
         trackedCurrencies = settings.trackedCurrencies;
         trackedCurrenciesByName = settings.trackedCurrencies.map(item => item.currency);
@@ -126,17 +144,24 @@
             await setItem('settings', {
                 showCurrencies,
                 updatePeriod,
+                language,
                 trackedCurrencies: Object.values(buySellTrack).filter(item => item.buy || item.sell)
             });
             swal.fire({
                 type: 'success',
-                title: 'Зміни успішно збережено!',
+                title: await t('settingsSavedMessage'),
                 showConfirmButton: false,
                 timer: 1500
-            });
+            })
+                    .then((result) => {
+                        if (result.dismiss) {
+                            window.location.reload();
+                        }
+                    });
+
         } catch (e) {
             swal.fire({
-                title: 'Зміни не збережено!',
+                title: await t('settingsNotSavedMessage'),
                 type: 'error',
                 text: e.message,
                 showConfirmButton: false,
