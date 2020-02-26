@@ -7,6 +7,6 @@ export const bankTitles = {
 export const bankUrls = {
     rulya: 'http://rulya-bank.com.ua/',
     piramida: 'http://www.piramida.rv.ua/',
-    lion: 'https://lion-kurs.com.ua/',
+    lion: 'https://lion-kurs.rv.ua/',
     goverla: 'https://goverla.ua/',
 };
